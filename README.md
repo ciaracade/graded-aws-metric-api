@@ -1,6 +1,6 @@
 # Graded AWS Metrics API
 
-An improved replica of my internship project at Capital One using [LocalStack](https://github.com/localstack/localstack) for AWS testing and practicing the [MVC](https://www.geeksforgeeks.org/software-engineering/mvc-framework-introduction/) framework.
+An improved replica of my internship project at Capital One using [LocalStack](https://github.com/localstack/localstack) for AWS testing, [Boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html) AWS SDK to manage EC2 instances, and practicing the [MVC](https://www.geeksforgeeks.org/software-engineering/mvc-framework-introduction/) framework.
 
 ## Getting Started
 
