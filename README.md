@@ -1,4 +1,4 @@
-# Graded AWS Metrics API
+# VPC Health and Utilization Metric API
 
 API grades the utilization of subnets in a VPC (Virtrual Private Cloud).
 
