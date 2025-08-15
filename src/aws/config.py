@@ -117,21 +117,6 @@ class AWSConfig:
                 raise
                 
         logger.info(f"Cloud seeding completed: {vpc_count} VPCs created") 
-     
-    def create_vpc(self) -> str:
-        """ Creates VPC """
-
-        
-    def create_subnet(self) -> str:
-        """ Creates subnet """
-
-    # del: for model
-    def get_vpc(self) -> dict:
-        """ Gets VPC """
-    
-    # del: for model
-    def get_subnet(self) -> dict:
-        """ Gets subnet """
     
     def check_ranges(self) -> None:
         """ 
