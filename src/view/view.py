@@ -8,7 +8,7 @@ from flask import Flask
 from controller.controller import controllerConfig
 
 class viewConfig:
-    def __init__(self, controller):
+    def __init__(self, controller: controllerConfig):
         self.app = Flask(__name__)
         self.controller = controller
 

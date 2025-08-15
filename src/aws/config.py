@@ -37,6 +37,8 @@ class AWSConfig:
     @classmethod
     def get_ec2_client(cls):
         """Get configured EC2 client for LocalStack"""
+
+
         return boto3.client(
             'ec2',
             config=cls._config,
