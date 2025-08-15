@@ -12,4 +12,10 @@ class viewConfig:
         self.app = Flask(__name__)
         self.controller = controller
 
+        @self.app.route("/")
+        def index():
+            return {"hello":"hello"}
+
+    
+
         
