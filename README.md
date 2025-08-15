@@ -18,28 +18,45 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-3. Create `.env` file and populate for your AWS account.
+3. Create `.env` file in the `src/` directory with the following variables:
 ```
-AWS_ACCESS_KEY_ID = 
-AWS_SECRET_ACCESS_KEY = 
-ENDPOINT_URL = 
+# AWS Configuration
+AWS_ACCESS_KEY_ID=test
+AWS_SECRET_ACCESS_KEY=test
+AWS_DEFAULT_REGION=us-east-1
+ENDPOINT_URL=http://localhost:4566
+
+# VPC/Subnet creation limits
+VPC_MIN=1
+VPC_MAX=3
+SUBNET_MIN=2
+SUBNET_MAX=5
+
+# Utilization ranges
+UTIL_LOW=0.05
+UTIL_HIGH=0.95
+
+# Random seed (optional)
+RAND_SEED=42
 ```
 
-If using LocalStack:
-```
-ENDPOINT_URL='http://localhost:4566',
-AWS_ACCESS_KEY_ID='test',
-AWS_SECRET_ACCESS_KEY='test'
-```
-
-3. Make sure docker is running in the background and strat LocalStack server.
+4. Make sure Docker is running in the background and start LocalStack server:
 ```
 localstack start
 ```
 
-4. Run `seed.py`.
+5. Navigate to the `src` directory and run the seeding script to populate LocalStack with test VPCs:
 ```
-python run db/seed.py
+cd src
+python aws/seed.py
 ```
 
-5. Use locally api via postman or whatever you like. 
+6. Start the Flask API:
+```
+python app.py
+```
+
+7. Use the API locally via Postman or curl:
+```
+curl http://127.0.0.1:5000 # or whatever endpoint your flask points to
+``` 
