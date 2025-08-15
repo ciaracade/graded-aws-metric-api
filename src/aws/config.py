@@ -5,11 +5,10 @@ via LocalStack
 
 import boto3
 from botocore.config import Config
-import random
-import time
-from typing import List, Dict
 from dotenv import load_dotenv
+import logging
 
+logger = logging.getLogger(__name__)
 load_dotenv()
 
 
@@ -37,13 +36,17 @@ class AWSConfig:
     @classmethod
     def get_ec2_client(cls):
         """Get configured EC2 client for LocalStack"""
+        logger.info("AWS EC2 Client initializing")
+        try:
+            return boto3.client(
+                'ec2',
+                config=cls._config,
+                endpoint_url=cls._endpoint_url,
+                aws_access_key_id=cls._aws_access_key_id,
+                aws_secret_access_key=cls._aws_secret_access_key
+            )
+        except Exception as e:
+            logger.error(f"Failed to create EC2 client: {e}")
+            raise
 
 
-        return boto3.client(
-            'ec2',
-            config=cls._config,
-            endpoint_url=cls._endpoint_url,
-            aws_access_key_id=cls._aws_access_key_id,
-            aws_secret_access_key=cls._aws_secret_access_key
-        )
-    
