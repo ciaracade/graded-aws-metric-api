@@ -50,7 +50,7 @@ class AWSConfig:
     @classmethod
     def get_ec2_client(cls):
         """Get configured EC2 client for LocalStack"""
-        logger.info("AWS EC2 Client initializing")
+        logger.info("AWS EC2 Client initializing...")
         try:
             logger.info("AWS EC2 Client initialized")
             return boto3.client(
@@ -68,8 +68,27 @@ class AWSConfig:
         """ Seeds AWS EC2 instance with VPCs of various subnet utilizations """
         self.check_ranges()
 
-        
-        # Creates a vpc
+        # Create randoms for VPC and subnet rangs
+        vpc_count = random.randint(VPC_MIN, VPC_MAX)
+
+        # Create vpc
+        for vpc_idx in range(1, vpc_count+1):
+            logger.info(f"Creating VPC #{vpc_idx}...")
+            try:
+                subnet_count = random.randint(SUBNET_MIN, SUBNET_MAX)
+                for subnet_idx in range(1, subnet_count+1):
+                    logger.info(f"Creating subnet #{subnet_idx}...")
+                    try:
+                        logger.info(f"Created subnet #{subnet_idx}")
+                    except Exception as e:
+                        logger.error(f"Failed to create subnet #{subnet_idx} in VPC #{vpc_idx}: {e}")
+                        raise
+                logger.info(f"Created VPC #{vpc_idx}")
+            except Exception as e:
+                logger.error(f"Failed to create VPC #{vpc_idx}: {e}")
+                raise
+
+
         # Creates subnet in vpc 
      
     def create_vpc(self):
@@ -87,8 +106,14 @@ class AWSConfig:
     def check_ranges(self):
         """ 
         Checks ranges on VPC/Subnet creation limits and utilization ranges to make
-        sure high >= low.
+        sure high >= low and minimums are not zero.
         """
+        if VPC_MIN <= 0:
+            raise ValueError(f"VPC_MIN ({VPC_MIN}) must be > 0")
+        
+        if SUBNET_MIN <= 0:
+            raise ValueError(f"SUBNET_MIN ({SUBNET_MIN}) must be > 0")
+        
         if VPC_MAX < VPC_MIN:
             raise ValueError(f"VPC_MAX ({VPC_MAX}) must be >= VPC_MIN ({VPC_MIN})")
         
