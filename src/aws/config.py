@@ -15,18 +15,15 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Initialize random values for VPC/Subnet creation
-VPC_MIN  = int(os.getenv("VPC_MIN", "1"))
-VPC_MAX  = int(os.getenv("VPC_MAX", "3"))
+VPC_MIN = int(os.getenv("VPC_MIN", "1"))
+VPC_MAX = int(os.getenv("VPC_MAX", "3"))
 SUBNET_MIN = int(os.getenv("SUBNET_MIN", "2"))
 SUBNET_MAX = int(os.getenv("SUBNET_MAX", "5"))
-UTIL_LOW   = float(os.getenv("UTIL_LOW", "0.05"))
-UTIL_HIGH  = float(os.getenv("UTIL_HIGH", "0.95"))
+UTIL_LOW = float(os.getenv("UTIL_LOW", "0.05"))
+UTIL_HIGH = float(os.getenv("UTIL_HIGH", "0.95"))
 SEED = os.getenv("RAND_SEED")
 if SEED is not None:
     random.seed(int(SEED))
-
-
-
 
 
 class AWSConfig:
@@ -47,7 +44,6 @@ class AWSConfig:
         """Initialize AWS configuration"""
         self.ec2 = self.get_ec2_client()
 
-
     @classmethod
     def get_ec2_client(cls):
         """Get configured EC2 client for LocalStack"""
@@ -64,10 +60,9 @@ class AWSConfig:
         except Exception as e:
             logger.error(f"Failed to create EC2 client: {e}")
             raise
-    
-    
+
     def seed_cloud(self, ec2: boto3.client) -> None:
-        """ Seeds AWS EC2 instance with VPCs of various subnet utilizations """
+        """Seeds AWS EC2 instance with VPCs of various subnet utilizations"""
         self.check_ranges()
 
         # Create randoms for VPC and subnet ranges
@@ -75,7 +70,7 @@ class AWSConfig:
         logger.info(f"Seeding {vpc_count} VPCs...")
 
         # Create VPCs with subnets
-        for vpc_idx in range(1, vpc_count+1):
+        for vpc_idx in range(1, vpc_count + 1):
             logger.info(f"Creating VPC #{vpc_idx}...")
             try:
                 # Create VPC
@@ -87,57 +82,67 @@ class AWSConfig:
 
                 # Create security group for this VPC
                 sg_id = self.ensure_sg(ec2, vpc_id, f"seed-sg-{vpc_idx}")
-                
+
                 # Create subnets in this VPC
                 subnet_count = random.randint(SUBNET_MIN, SUBNET_MAX)
-                for subnet_idx in range(1, subnet_count+1):
+                for subnet_idx in range(1, subnet_count + 1):
                     logger.info(f"Creating subnet #{subnet_idx} in VPC #{vpc_idx}...")
                     try:
                         # Create subnet
                         subnet_cidr = self.nth_subnet_cidr(vpc_cidr, subnet_idx)
-                        subnet_response = ec2.create_subnet(VpcId=vpc_id, CidrBlock=subnet_cidr)
+                        subnet_response = ec2.create_subnet(
+                            VpcId=vpc_id, CidrBlock=subnet_cidr
+                        )
                         subnet_id = subnet_response["Subnet"]["SubnetId"]
                         self.tag(ec2, subnet_id, f"seed-subnet-{vpc_idx}-{subnet_idx}")
-                        
+
                         # Fill subnet to random utilization
                         target_util = random.uniform(UTIL_LOW, UTIL_HIGH)
                         used, cap, actual_util = self.fill_subnet_to_utilization(
                             ec2, subnet_id, sg_id, subnet_cidr, target_util
                         )
-                        logger.info(f"Created subnet #{subnet_idx}: {subnet_id} ({subnet_cidr}) - {used}/{cap} IPs ({actual_util}%)")
-                        
+                        logger.info(
+                            f"Created subnet #{subnet_idx}: {subnet_id} ({subnet_cidr}) - {used}/{cap} IPs ({actual_util}%)"
+                        )
+
                     except Exception as e:
-                        logger.error(f"Failed to create subnet #{subnet_idx} in VPC #{vpc_idx}: {e}")
+                        logger.error(
+                            f"Failed to create subnet #{subnet_idx} in VPC #{vpc_idx}: {e}"
+                        )
                         raise
-                        
+
                 logger.info(f"Completed VPC #{vpc_idx} with {subnet_count} subnets")
-                
+
             except Exception as e:
                 logger.error(f"Failed to create VPC #{vpc_idx}: {e}")
                 raise
-                
-        logger.info(f"Cloud seeding completed: {vpc_count} VPCs created") 
-    
+
+        logger.info(f"Cloud seeding completed: {vpc_count} VPCs created")
+
     def check_ranges(self) -> None:
-        """ 
+        """
         Checks ranges on VPC/Subnet creation limits and utilization ranges to make
         sure high >= low and minimums are not zero.
         """
         if VPC_MIN <= 0:
             raise ValueError(f"VPC_MIN ({VPC_MIN}) must be > 0")
-        
+
         if SUBNET_MIN <= 0:
             raise ValueError(f"SUBNET_MIN ({SUBNET_MIN}) must be > 0")
-        
+
         if VPC_MAX < VPC_MIN:
             raise ValueError(f"VPC_MAX ({VPC_MAX}) must be >= VPC_MIN ({VPC_MIN})")
-        
+
         if SUBNET_MAX < SUBNET_MIN:
-            raise ValueError(f"SUBNET_MAX ({SUBNET_MAX}) must be >= SUBNET_MIN ({SUBNET_MIN})")
-        
+            raise ValueError(
+                f"SUBNET_MAX ({SUBNET_MAX}) must be >= SUBNET_MIN ({SUBNET_MIN})"
+            )
+
         if UTIL_HIGH < UTIL_LOW:
-            raise ValueError(f"UTIL_HIGH ({UTIL_HIGH}) must be >= UTIL_LOW ({UTIL_LOW})")
-        
+            raise ValueError(
+                f"UTIL_HIGH ({UTIL_HIGH}) must be >= UTIL_LOW ({UTIL_LOW})"
+            )
+
         logger.info("All ranges validated successfully")
 
     # Hepers for seeding
@@ -166,17 +171,28 @@ class AWSConfig:
         return [str(ip) for ip in hosts[3:-1]] if len(hosts) >= 5 else []
 
     def ensure_sg(self, ec2: boto3.client, vpc_id: str, name: str) -> str:
-        sg_id = ec2.create_security_group(GroupName=name, Description=name, VpcId=vpc_id)["GroupId"]
+        sg_id = ec2.create_security_group(
+            GroupName=name, Description=name, VpcId=vpc_id
+        )["GroupId"]
         try:
             ec2.authorize_security_group_egress(
                 GroupId=sg_id,
-                IpPermissions=[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}]}]
+                IpPermissions=[
+                    {"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}]}
+                ],
             )
         except Exception:
             pass
         return sg_id
 
-    def fill_subnet_to_utilization(self, ec2: boto3.client, subnet_id: str, sg_id: str, cidr: str, target_util: float) -> Tuple[int, int, float]:
+    def fill_subnet_to_utilization(
+        self,
+        ec2: boto3.client,
+        subnet_id: str,
+        sg_id: str,
+        cidr: str,
+        target_util: float,
+    ) -> Tuple[int, int, float]:
         cap = self.subnet_capacity(cidr)
         if cap <= 0:
             return (0, 0, 0.0)
@@ -190,7 +206,10 @@ class AWSConfig:
         while used < target_used and i < len(ips):
             batch = min(20, target_used - used)  # 1 primary + up to 19 secondary IPs
             primary = ips[i]
-            secondaries = [{"PrivateIpAddress": ip, "Primary": False} for ip in ips[i+1:i+batch]]
+            secondaries = [
+                {"PrivateIpAddress": ip, "Primary": False}
+                for ip in ips[i + 1 : i + batch]
+            ]
             eni = ec2.create_network_interface(
                 SubnetId=subnet_id,
                 Groups=[sg_id],
