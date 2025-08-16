@@ -19,4 +19,5 @@ class viewConfig:
                 "status": "healthy",
                 "service": "AWS VPC Health and Utilization Metric API",
                 "version": "1.0.0",
-            }            
+            }
+                    
