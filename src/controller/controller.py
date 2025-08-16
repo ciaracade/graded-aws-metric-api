@@ -9,3 +9,7 @@ from model.model import modelConfig
 class controllerConfig:
     def __init__(self, model: modelConfig):
         self.model = model
+
+    def get_vpcs:
+        
+        return 

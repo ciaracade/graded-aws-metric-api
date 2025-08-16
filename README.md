@@ -2,7 +2,21 @@
 
 API grades the utilization of subnets in a VPC (Virtrual Private Cloud).
 
-An improved replica of my internship project at Capital One using [LocalStack](https://github.com/localstack/localstack) as a cloud service emulator for AWS services, [Boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html) AWS SDK to manage the EC2 instance and VPC/subnet creation, and practicing the [MVC](https://www.geeksforgeeks.org/software-engineering/mvc-framework-introduction/) framework.
+  An improved replica of my internship project at
+  Capital One using [LocalStack](https://github.com/localstack/localstack) as a cloud service emulator for
+  AWS services containerized with [Docker](https://www.docker.com/), [Boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html) AWS SDK,
+  [Flask](https://flask.palletsprojects.com/) web
+  framework, [SQLAlchemy](https://www.sqlalchemy.org/) ORM with SQLite database, and practicing the
+  [MVC](https://www.geeksforgeeks.org/software-engineering/mvc-framework-introduction/) architecture
+  pattern.
+
+## What it does
+- API that gathers VPC utilization metrics and returns it for that given account 
+- Gathers subnet data and calculates % of VPC utilization and assign grade (A-F)
+- Provides recommendation for users to address potential VPC health issues based on grade
+
+**High Utilization** -> Request to expand VPC
+**Low Utilization** -> Warning to consolidate VPCs
 
 ## Getting Started
 
