@@ -26,7 +26,6 @@ class controllerConfig:
                     'name': vpc.name,
                     'cidr_block': vpc.cidr_block,
                     'state': vpc.state,
-                    'region': vpc.region,
                     'utilization_score': vpc.utilization_score,
                     'grade': self._score_to_grade(vpc.utilization_score),
                     'last_updated': vpc.last_updated.isoformat() if vpc.last_updated else None
@@ -67,7 +66,6 @@ class controllerConfig:
                 'name': vpc.name,
                 'cidr_block': vpc.cidr_block,
                 'state': vpc.state,
-                'region': vpc.region,
                 'utilization_score': vpc.utilization_score,
                 'grade': self._score_to_grade(vpc.utilization_score),
                 'last_updated': vpc.last_updated.isoformat() if vpc.last_updated else None,

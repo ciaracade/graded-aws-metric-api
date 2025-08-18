@@ -57,7 +57,7 @@ class Subnet(Base):
 class modelConfig:
     def __init__(self, client: AWSConfig):
         self.client = client
-        self.engine = create_engine("sqlite:///db/metrics.db")
+        self.engine = create_engine("sqlite:///db/model.db")
         Base.metadata.create_all(self.engine)
         logger.info("Database tables created successfully")
         self.update_db()
